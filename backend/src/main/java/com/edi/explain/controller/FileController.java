@@ -33,7 +33,6 @@ public class FileController {
 
             String extractedText = textExtractionService.extractText(file);
 
-            // Create chat session with extracted text
             ChatSession session = sessionService.createSession(fileName, extractedText);
 
             log.info("=== FILE UPLOADED ===");

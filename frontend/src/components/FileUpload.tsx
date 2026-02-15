@@ -18,7 +18,6 @@ export default function FileUpload({ onSessionCreated }: FileUploadProps) {
       setIsUploading(true);
       setError(null);
 
-      // Upload file to backend
       const formData = new FormData();
       formData.append('file', file);
 
@@ -32,7 +31,6 @@ export default function FileUpload({ onSessionCreated }: FileUploadProps) {
           const data = await response.json();
           console.log('Upload successful:', data);
 
-          // Notify parent component with session info
           if (data.sessionId && data.fileName) {
             onSessionCreated(data.sessionId, data.fileName);
           }

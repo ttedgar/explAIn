@@ -35,18 +35,15 @@ public class SessionService {
             throw new IllegalArgumentException("Session not found: " + sessionId);
         }
 
-        // Add user message to history
         ChatMessage userMsg = new ChatMessage("user", userMessage);
         session.addMessage(userMsg);
 
-        // Get AI response
         String aiResponse = geminiService.sendMessage(
             session.getSystemPrompt(),
             session.getConversationHistory(),
             userMessage
         );
 
-        // Add AI response to history
         ChatMessage aiMsg = new ChatMessage("model", aiResponse);
         session.addMessage(aiMsg);
 

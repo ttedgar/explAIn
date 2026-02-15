@@ -5,24 +5,27 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: explain-backend
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    volumes:
-      - ./uploads:/app/uploads
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     networks:
       - explain-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: explain-frontend
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:8080/api
+      - "3000:80"
     depends_on:
       - backend
     networks:
@@ -31,6 +34,3 @@ services:
 networks:
   explain-network:
     driver: bridge
-
-volumes:
-  uploads:

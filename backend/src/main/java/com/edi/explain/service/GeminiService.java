@@ -29,16 +29,13 @@ public class GeminiService {
 
     public String sendMessage(String systemPrompt, List<ChatMessage> conversationHistory, String userMessage) {
         try {
-            // Build the request payload
             Map<String, Object> payload = buildPayload(systemPrompt, conversationHistory, userMessage);
 
-            // Set headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-            // Make API call
             String url = GEMINI_API_URL + "?key=" + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(
                 url,
@@ -47,7 +44,6 @@ public class GeminiService {
                 String.class
             );
 
-            // Parse response
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return parseGeminiResponse(response.getBody());
             } else {
@@ -63,13 +59,11 @@ public class GeminiService {
     private Map<String, Object> buildPayload(String systemPrompt, List<ChatMessage> history, String userMessage) {
         List<Map<String, Object>> contents = new ArrayList<>();
 
-        // Add system prompt as first user message
         contents.add(Map.of(
             "role", "user",
             "parts", List.of(Map.of("text", systemPrompt))
         ));
 
-        // Add conversation history
         for (ChatMessage msg : history) {
             contents.add(Map.of(
                 "role", msg.getRole(),
@@ -77,7 +71,6 @@ public class GeminiService {
             ));
         }
 
-        // Add current user message
         contents.add(Map.of(
             "role", "user",
             "parts", List.of(Map.of("text", userMessage))

@@ -26,7 +26,6 @@ export default function ChatWindow({ sessionId, fileName }: ChatWindowProps) {
   }, [messages]);
 
   const sendMessage = async (userMessage: string) => {
-    // Add user message to UI immediately
     const userMsg: Message = { role: 'user', content: userMessage };
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
@@ -72,7 +71,6 @@ export default function ChatWindow({ sessionId, fileName }: ChatWindowProps) {
         <p className="text-sm text-gray-500">Ask questions about your document</p>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center text-gray-500">
@@ -95,7 +93,6 @@ export default function ChatWindow({ sessionId, fileName }: ChatWindowProps) {
         )}
       </div>
 
-      {/* Input */}
       <ChatInput onSendMessage={sendMessage} disabled={isLoading} />
     </div>
   );

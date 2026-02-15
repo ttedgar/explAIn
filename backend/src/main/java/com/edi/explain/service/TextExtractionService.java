@@ -14,8 +14,7 @@ public class TextExtractionService {
 
     public String extractText(MultipartFile file) throws Exception {
         try (InputStream inputStream = file.getInputStream()) {
-            // Apache Tika automatically detects file type and extracts text
-            BodyContentHandler handler = new BodyContentHandler(-1); // -1 = no limit
+            BodyContentHandler handler = new BodyContentHandler(-1);
             AutoDetectParser parser = new AutoDetectParser();
             Metadata metadata = new Metadata();
             ParseContext context = new ParseContext();
