@@ -2,13 +2,21 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FileText } from 'lucide-react';
 
-export default function FileUpload() {
+interface FileUploadProps {
+  onSessionCreated: (sessionId: string, fileName: string) => void;
+}
+
+export default function FileUpload({ onSessionCreated }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
       setSelectedFile(file);
+      setIsUploading(true);
+      setError(null);
 
       // Upload file to backend
       const formData = new FormData();
@@ -23,14 +31,25 @@ export default function FileUpload() {
         if (response.ok) {
           const data = await response.json();
           console.log('Upload successful:', data);
+
+          // Notify parent component with session info
+          if (data.sessionId && data.fileName) {
+            onSessionCreated(data.sessionId, data.fileName);
+          }
         } else {
-          console.error('Upload failed');
+          const errorData = await response.json();
+          setError(errorData.error || 'Upload failed');
+          setSelectedFile(null);
         }
       } catch (error) {
         console.error('Error uploading file:', error);
+        setError('Network error. Please try again.');
+        setSelectedFile(null);
+      } finally {
+        setIsUploading(false);
       }
     }
-  }, []);
+  }, [onSessionCreated]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -63,6 +82,12 @@ export default function FileUpload() {
       >
         <input {...getInputProps()} />
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {selectedFile ? (
           <div className="space-y-4">
             <FileText className="w-16 h-16 text-gray-600 mx-auto" />
@@ -70,12 +95,14 @@ export default function FileUpload() {
               <p className="text-lg font-medium text-gray-900">{selectedFile.name}</p>
               <p className="text-sm text-gray-500 mt-1">{formatFileSize(selectedFile.size)}</p>
             </div>
-            <p className="text-gray-600">Starting chat...</p>
+            <p className="text-gray-600">
+              {isUploading ? 'Processing...' : 'Starting chat...'}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
             <p className="text-xl text-gray-700 leading-relaxed">
-              Have an AI help you understand difficult texts — be it a legal document or a research paper.
+              Have an AI help you understand difficult texts — from legal documents to research papers.
             </p>
             <p className="text-lg text-gray-500">
               {isDragActive ? 'Drop your file here...' : 'Drag and drop files to start AI chat about it!'}

@@ -1,0 +1,6 @@
+# Local configuration template
+# Copy this file to application-local.properties and add your actual API key
+# The application-local.properties file is gitignored for security
+
+# Get your Gemini API key from: https://aistudio.google.com/app/apikey
+gemini.api.key=YOUR_GEMINI_API_KEY_HERE

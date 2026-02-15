@@ -1,5 +1,7 @@
 package com.edi.explain.controller;
 
+import com.edi.explain.model.ChatSession;
+import com.edi.explain.service.SessionService;
 import com.edi.explain.service.TextExtractionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import java.util.Map;
 public class FileController {
 
     private final TextExtractionService textExtractionService;
+    private final SessionService sessionService;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -30,14 +33,19 @@ public class FileController {
 
             String extractedText = textExtractionService.extractText(file);
 
+            // Create chat session with extracted text
+            ChatSession session = sessionService.createSession(fileName, extractedText);
+
             log.info("=== FILE UPLOADED ===");
             log.info("File name: {}", fileName);
             log.info("File size: {} bytes", file.getSize());
             log.info("Content type: {}", file.getContentType());
-            log.info("\n=== EXTRACTED TEXT ===\n{}\n======================", extractedText);
+            log.info("Session ID: {}", session.getSessionId());
+            log.info("Text length: {} characters", extractedText.length());
 
             return ResponseEntity.ok(Map.of(
                 "message", "File processed successfully",
+                "sessionId", session.getSessionId(),
                 "fileName", fileName,
                 "textLength", String.valueOf(extractedText.length())
             ));
