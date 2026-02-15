@@ -2,11 +2,11 @@
 
 > Upload documents and chat with AI to understand their content
 
-## 🎥 Tutorial Video
+## 🎥 Demo
 
-https://github.com/user-attachments/assets/explAIn-tutorial-video.mp4
+![explAIn Demo](./explAIn-demo.gif)
 
-*Having trouble viewing? [Download the video](./explAIn%20tutorial%20video.mp4)*
+*Full tutorial demonstration showing document upload and AI-powered Q&A*
 
 ---
 
