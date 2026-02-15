@@ -94,11 +94,11 @@ public class GeminiService {
             JsonNode root = objectMapper.readTree(responseBody);
             JsonNode candidates = root.path("candidates");
 
-            if (candidates.isArray() && candidates.size() > 0) {
+            if (candidates.isArray() && !candidates.isEmpty()) {
                 JsonNode content = candidates.get(0).path("content");
                 JsonNode parts = content.path("parts");
 
-                if (parts.isArray() && parts.size() > 0) {
+                if (parts.isArray() && !parts.isEmpty()) {
                     return parts.get(0).path("text").asText();
                 }
             }
