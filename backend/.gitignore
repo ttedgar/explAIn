@@ -42,6 +42,11 @@ logs/
 .env
 .env.local
 
+# Application properties with secrets
+application-local.properties
+application-*.properties
+!application.properties
+
 # Temporary files
 *.tmp
 *.temp
