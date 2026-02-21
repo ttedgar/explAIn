@@ -60,7 +60,7 @@ Perfect for understanding:
 
 ### For Local Development:
 - **Java 17+** ([Download](https://adoptium.net/))
-- **Maven 3.9+** ([Download](https://maven.apache.org/download.cgi))
+- **Maven 3.9+** ([Download](https://maven.apache.org/download.cgi)) — *or use the included Maven wrapper (`mvnw`/`mvnw.cmd`)*
 - **Node.js 20+** ([Download](https://nodejs.org/))
 - **npm** (comes with Node.js)
 - **Google Gemini API Key** ([Get one here](https://aistudio.google.com/app/apikey))
@@ -80,15 +80,42 @@ cd explAIn
 ```
 
 #### 2. Configure the backend
-Create `backend/src/main/resources/application-local.properties`:
-```properties
-gemini.api.key=YOUR_GEMINI_API_KEY_HERE
+Copy the template and add your actual API key:
+
+**On Linux/Mac:**
+```bash
+cp backend/src/main/resources/application-local.properties.template \
+   backend/src/main/resources/application-local.properties
 ```
 
-#### 3. Start the backend
+**On Windows (PowerShell):**
+```powershell
+Copy-Item backend/src/main/resources/application-local.properties.template `
+   backend/src/main/resources/application-local.properties
+```
+
+Edit `application-local.properties` and replace `YOUR_GEMINI_API_KEY_HERE` with your actual key from [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
+
+#### 3. Start the backend with the local profile
+
+**Using Maven (if installed):**
 ```bash
 cd backend
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+**Using Maven wrapper (no Maven installation needed):**
+
+On Linux/Mac:
+```bash
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+On Windows (PowerShell):
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 Backend runs on: **http://localhost:8080**
 
@@ -108,8 +135,15 @@ Navigate to **http://localhost:5173** and start using the app!
 ### Option 2: Run with Docker (Production)
 
 #### 1. Create environment file
+
+**On Linux/Mac:**
 ```bash
 cp .env.example .env
+```
+
+**On Windows (PowerShell):**
+```powershell
+Copy-Item .env.example .env
 ```
 
 Edit `.env` and add your Gemini API key:
@@ -246,13 +280,24 @@ explAIn/
 ## 🔧 Configuration
 
 ### Backend Configuration
-Edit `backend/src/main/resources/application.properties`:
+The backend uses **Spring Boot profiles** to manage API key configuration:
+
+**For Local Development:**
+- `application.properties` (committed) - contains `gemini.api.key=${GEMINI_API_KEY}` placeholder
+- `application-local.properties` (gitignored) - contains your actual API key
+- Copy from `application-local.properties.template` and add your key
+- Run with profile flag: `mvn spring-boot:run -Dspring-boot.run.profiles=local`
+
+**For Docker:**
+- `application.properties` (same as above) - Docker sets `GEMINI_API_KEY` environment variable
+- Copy `.env.example` to `.env` and add your API key
+- Run: `docker-compose up --build`
 
 ```properties
 # Server port
 server.port=8080
 
-# Gemini API
+# Gemini API - reads from environment variable (Docker) or local properties override (local dev)
 gemini.api.key=${GEMINI_API_KEY}
 
 # File upload limits
