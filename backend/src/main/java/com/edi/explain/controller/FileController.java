@@ -1,5 +1,6 @@
 package com.edi.explain.controller;
 
+import com.edi.explain.dto.UploadResponse;
 import com.edi.explain.model.ChatSession;
 import com.edi.explain.service.SessionService;
 import com.edi.explain.service.TextExtractionService;
@@ -22,7 +23,7 @@ public class FileController {
     private final SessionService sessionService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String fileName = file.getOriginalFilename();
             if (fileName == null || fileName.isBlank()) {
@@ -42,11 +43,11 @@ public class FileController {
             log.info("Session ID: {}", session.getSessionId());
             log.info("Text length: {} characters", extractedText.length());
 
-            return ResponseEntity.ok(Map.of(
-                "message", "File processed successfully",
-                "sessionId", session.getSessionId(),
-                "fileName", fileName,
-                "textLength", String.valueOf(extractedText.length())
+            return ResponseEntity.ok(new UploadResponse(
+                "File processed successfully",
+                session.getSessionId(),
+                fileName,
+                extractedText.length()
             ));
         } catch (Exception e) {
             log.error("Error processing file", e);

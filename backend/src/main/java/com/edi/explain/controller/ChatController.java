@@ -1,5 +1,8 @@
 package com.edi.explain.controller;
 
+import com.edi.explain.dto.ChatResponse;
+import com.edi.explain.dto.SendMessageRequest;
+import com.edi.explain.dto.SessionResponse;
 import com.edi.explain.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,23 +21,19 @@ public class ChatController {
     private final SessionService sessionService;
 
     @PostMapping("/{sessionId}")
-    public ResponseEntity<Map<String, String>> sendMessage(
+    public ResponseEntity<?> sendMessage(
             @PathVariable String sessionId,
-            @RequestBody Map<String, String> request) {
+            @RequestBody SendMessageRequest request) {
         try {
-            String userMessage = request.get("message");
-            if (userMessage == null || userMessage.isBlank()) {
+            if (request.message() == null || request.message().isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of(
                     "error", "Message is required"
                 ));
             }
 
-            String aiResponse = sessionService.sendMessage(sessionId, userMessage);
+            String aiResponse = sessionService.sendMessage(sessionId, request.message());
 
-            return ResponseEntity.ok(Map.of(
-                "response", aiResponse,
-                "sessionId", sessionId
-            ));
+            return ResponseEntity.ok(new ChatResponse(aiResponse, sessionId));
         } catch (IllegalArgumentException e) {
             log.error("Session not found: {}", sessionId);
             return ResponseEntity.badRequest().body(Map.of(
@@ -49,13 +48,13 @@ public class ChatController {
     }
 
     @GetMapping("/session/{sessionId}")
-    public ResponseEntity<?> getSession(@PathVariable String sessionId) {
+    public ResponseEntity<SessionResponse> getSession(@PathVariable String sessionId) {
         return sessionService.getSession(sessionId)
-            .map(session -> ResponseEntity.ok(Map.of(
-                "sessionId", session.getSessionId(),
-                "fileName", session.getFileName(),
-                "messageCount", session.getConversationHistory().size(),
-                "createdAt", session.getCreatedAt().toString()
+            .map(session -> ResponseEntity.ok(new SessionResponse(
+                session.getSessionId(),
+                session.getFileName(),
+                session.getConversationHistory().size(),
+                session.getCreatedAt().toString()
             )))
             .orElse(ResponseEntity.notFound().build());
     }
