@@ -18,9 +18,11 @@ public class SessionService {
 
     private final Map<String, ChatSession> sessions = new ConcurrentHashMap<>();
     private final AIService aiService;
+    private final SystemPromptService systemPromptService;
 
     public ChatSession createSession(String fileName, String extractedText) {
-        ChatSession session = new ChatSession(fileName, extractedText);
+        String systemPrompt = systemPromptService.buildSystemPrompt(extractedText);
+        ChatSession session = new ChatSession(fileName, extractedText, systemPrompt);
         sessions.put(session.getSessionId(), session);
         log.info("Created session {} for file: {}", session.getSessionId(), fileName);
         return session;

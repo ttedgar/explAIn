@@ -23,8 +23,8 @@ public class GeminiService implements AIService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    private static final String GEMINI_API_URL =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+    @Value("${gemini.api.url}")
+    private String geminiApiUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -38,7 +38,7 @@ public class GeminiService implements AIService {
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-            String url = GEMINI_API_URL + "?key=" + apiKey;
+            String url = geminiApiUrl + "?key=" + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
