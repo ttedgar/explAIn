@@ -1,5 +1,6 @@
 package com.edi.explain.service;
 
+import com.edi.explain.exception.SessionNotFoundException;
 import com.edi.explain.model.ChatMessage;
 import com.edi.explain.model.ChatSession;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class SessionService {
     public String sendMessage(String sessionId, String userMessage) {
         ChatSession session = sessions.get(sessionId);
         if (session == null) {
-            throw new IllegalArgumentException("Session not found: " + sessionId);
+            throw new SessionNotFoundException(sessionId);
         }
 
         ChatMessage userMsg = new ChatMessage("user", userMessage);

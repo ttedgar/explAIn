@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/chat")
@@ -21,30 +19,16 @@ public class ChatController {
     private final SessionService sessionService;
 
     @PostMapping("/{sessionId}")
-    public ResponseEntity<?> sendMessage(
+    public ResponseEntity<ChatResponse> sendMessage(
             @PathVariable String sessionId,
             @RequestBody SendMessageRequest request) {
-        try {
-            if (request.message() == null || request.message().isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Message is required"
-                ));
-            }
-
-            String aiResponse = sessionService.sendMessage(sessionId, request.message());
-
-            return ResponseEntity.ok(new ChatResponse(aiResponse, sessionId));
-        } catch (IllegalArgumentException e) {
-            log.error("Session not found: {}", sessionId);
-            return ResponseEntity.badRequest().body(Map.of(
-                "error", e.getMessage()
-            ));
-        } catch (Exception e) {
-            log.error("Error processing chat message", e);
-            return ResponseEntity.internalServerError().body(Map.of(
-                "error", "Failed to process message: " + e.getMessage()
-            ));
+        if (request.message() == null || request.message().isBlank()) {
+            throw new IllegalArgumentException("Message is required");
         }
+
+        String aiResponse = sessionService.sendMessage(sessionId, request.message());
+
+        return ResponseEntity.ok(new ChatResponse(aiResponse, sessionId));
     }
 
     @GetMapping("/session/{sessionId}")
