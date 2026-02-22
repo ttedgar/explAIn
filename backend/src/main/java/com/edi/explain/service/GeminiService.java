@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,8 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class GeminiService {
+@ConditionalOnProperty(name = "ai.provider", havingValue = "gemini", matchIfMissing = true)
+public class GeminiService implements AIService {
 
     @Value("${gemini.api.key}")
     private String apiKey;

@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionService {
 
     private final Map<String, ChatSession> sessions = new ConcurrentHashMap<>();
-    private final GeminiService geminiService;
+    private final AIService aiService;
 
     public ChatSession createSession(String fileName, String extractedText) {
         ChatSession session = new ChatSession(fileName, extractedText);
@@ -38,7 +38,7 @@ public class SessionService {
         ChatMessage userMsg = new ChatMessage("user", userMessage);
         session.addMessage(userMsg);
 
-        String aiResponse = geminiService.sendMessage(
+        String aiResponse = aiService.sendMessage(
             session.getSystemPrompt(),
             session.getConversationHistory(),
             userMessage
